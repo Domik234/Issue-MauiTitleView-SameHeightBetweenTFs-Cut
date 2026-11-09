@@ -26,8 +26,8 @@ Same result on a physical iPhone 16e running iOS 27.2 (debug build from the atta
 |---|---|
 | ![net9 device](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhone16e/net9-bar.png) | ![net10 device](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhone16e/net10-bar.png) |
 
-Control: a physical iPhone XS running iOS 18.7.10 is **not** affected (the navigation bar is 44 pt there, both target frameworks give the
-same layout, container `(0,0 343×44)`, no offset): [net9](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhoneXS/net9-bar.png), [net10](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhoneXS/net10-bar.png).
+Control: iOS 18 is **not** affected, on a physical iPhone XS running iOS 18.7.10 and on the iPhone 14 simulator with iOS 18.6 (the navigation bar is
+44 pt there, both target frameworks give the same layout, container as high as the bar, no offset). Screenshots: iPhone XS [net9](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhoneXS/net9-bar.png), [net10](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhoneXS/net10-bar.png), iOS 18.6 simulator [net9](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS18.6/net9-bar.png), [net10](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS18.6/net10-bar.png).
 
 ### Steps to Reproduce
 
@@ -55,7 +55,7 @@ Without `ClipsToBounds = true` the title is only shifted up and nothing is cut o
 The navigation bar is 54 pt high in all these runs (`UINavigationBar.sizeThatFits` returns 54). The frames below are identical
 on the iOS 26.5 simulator (`results/simulator-iPhone14-iOS26.5/`), on the iOS 27.0 simulator (`results/simulator-iPhone14-iOS27.0/`)
 and on the physical iPhone 16e with iOS 27.2 (`results/iPhone16e/`); each folder has `net9-dump.txt` and `net10-dump.txt`.
-On the iPhone XS with iOS 18.7.10 (`results/iPhoneXS/`) the bar is 44 pt and the container is `(0,0 343×44)` on both target frameworks.
+On the iPhone XS with iOS 18.7.10 (`results/iPhoneXS/`) and on the iOS 18.6 simulator (`results/simulator-iPhone14-iOS18.6/`) the bar is 44 pt and the container is as high as the bar on both target frameworks.
 
 | | .NET 9 (MAUI 9.0.120) | .NET 10 (MAUI 10.0.120) |
 |---|---|---|
@@ -86,7 +86,7 @@ In `NavigationRenderer.cs`, class `Container`:
 * **MAUI 10.0.110 and 10.0.120:** on iOS 26+ `CreateTitleViewContainer` creates the container with `navigationBar.Frame`
   (`new Container(titleView, navigationBar, navigationBarFrame)`), the height is cached in `_navigationBarHeight`, and `ToolbarHeight`
   returns it before `Superview.Bounds.Height`. The `Frame` setter and `SizeThatFits` then force this height. On iOS 26.5 and 27 the navigation bar
-  (54 pt) is taller than the area UIKit reserves for the title, so the wrapper overflows by 5 pt on both sides. On iOS 18 (iPhone XS) the bar
+  (54 pt) is taller than the area UIKit reserves for the title, so the wrapper overflows by 5 pt on both sides. On iOS 18 (iPhone XS, iOS 18.6 simulator) the bar
   is 44 pt, the heights agree and nothing is shifted.
 
 According to the description of #39285 the explicit-frame sizing was introduced in #32798.
@@ -118,14 +118,14 @@ Yes. Last version that worked well: MAUI 9.0.120 / .NET 9 (also 9.0.90 by the so
 ### Affected platforms / versions
 
 iOS 26.5 simulator (iPhone 14), iOS 27.0 simulator (iPhone 14) and physical iPhone 16e with iOS 27.2 (all with the attached project), iOS 27.2 (production app).
-Not affected: physical iPhone XS with iOS 18.7.10 (navigation bar 44 pt). Not tested on iOS 26.0 to 26.4 and 27.1.
+Not affected: physical iPhone XS with iOS 18.7.10 and iPhone 14 simulator with iOS 18.6 (navigation bar 44 pt). Not tested on iOS 26.0 to 26.4 and 27.1.
 
 ### Environment
 
 * .NET SDK 10.0.403, runtime 10.0.14 / 9.0.22
 * iOS workload 27.1.10018 (net10.0-ios), net9.0-ios built against the iOS 26.5 SDK (Xcode 26.5), net10.0-ios against 27.1 (Xcode 27.1)
 * Microsoft.Maui.Controls 9.0.120 and 10.0.110 / 10.0.120
-* Xcode 26.5 / 27.1; devices: iPhone 14 simulators (iOS 26.5, 27.0), iPhone 16e (iOS 27.2), iPhone XS (iOS 18.7.10)
+* Xcode 26.5 / 27.1; devices: iPhone 14 simulators (iOS 18.6, 26.5, 27.0), iPhone 16e (iOS 27.2), iPhone XS (iOS 18.7.10)
 
 ### Notes about the comparison
 

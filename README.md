@@ -1,13 +1,13 @@
 # TitleView repro: .NET 9 vs .NET 10 on iOS 26+/27
 
 Minimal .NET MAUI app with a custom `NavigationPage.TitleView`, multi-targeting `net9.0-ios` and `net10.0-ios`.
-The same code renders correctly on .NET 9 and loses the top of the title on .NET 10 (iOS 26.5 and 27; iOS 18 is not affected).
+The same code renders correctly on .NET 9 and loses the top of the title on .NET 10 (iOS 26.5 and 27; iOS 18.6 and 18.7 are not affected).
 
 ## Repository layout
 
 * [`example/`](example) the MAUI project (`TitleViewRepro.csproj`) and `run.sh`
 * [`results/`](results) native layout dumps and screenshots from the runs described below, one folder per device:
-  `simulator-iPhone14-iOS26.5/`, `simulator-iPhone14-iOS27.0/`, `iPhone16e/` (iOS 27.2), `iPhoneXS/` (iOS 18.7.10)
+  `simulator-iPhone14-iOS18.6/`, `simulator-iPhone14-iOS26.5/`, `simulator-iPhone14-iOS27.0/`, `iPhone16e/` (iOS 27.2), `iPhoneXS/` (iOS 18.7.10)
 * [`ISSUE.md`](ISSUE.md) draft of the issue for the MAUI repository
 
 ## Symptom
@@ -49,11 +49,20 @@ Dumps: [`results/iPhone16e/`](results/iPhone16e).
 Dumps: [`results/iPhoneXS/`](results/iPhoneXS). Here the bar is 44 pt, the container is `(0,0 343×44)` on both target frameworks and the
 title wrapper has no offset, so .NET 9 and .NET 10 render the same. (The status bar shows 9:41 because the screenshots were taken over the USB screen capture.)
 
+### iPhone 14 simulator, iOS 18.6 (bar 44 pt) — not affected
+
+| net9.0-ios (MAUI 9.0.120) | net10.0-ios (MAUI 10.0.120) |
+|---|---|
+| ![net9 iOS 18.6](results/simulator-iPhone14-iOS18.6/net9-bar.png) | ![net10 iOS 18.6](results/simulator-iPhone14-iOS18.6/net10-bar.png) |
+
+Dumps: [`results/simulator-iPhone14-iOS18.6/`](results/simulator-iPhone14-iOS18.6). Same as on the iPhone XS: bar 44 pt, container `(0,0 358×44)` on both
+target frameworks. The iOS 18.6 runtime was installed with `xcodebuild -downloadPlatform iOS -buildVersion 18.6` (Xcode 26.5).
+
 ## What differs (from the dumps)
 
 On iOS 26.5 and 27 the navigation bar is 54 pt high in all runs (`sizeThatFits` = 54). The numbers below are identical on the iOS 26.5 and 27.0
-simulators (iPhone 14) and on the iPhone 16e with iOS 27.2. On the iPhone XS with iOS 18.7.10 the bar is 44 pt and both target frameworks give the same result
-(container `(0,0 343×44)`), which is consistent with the cause described below: the container follows the bar height, which only differs from the title area on iOS 26+ (not tested on iOS 26.0 to 26.4 and 27.1).
+simulators (iPhone 14) and on the iPhone 16e with iOS 27.2. On the iPhone XS with iOS 18.7.10 and on the iOS 18.6 simulator the bar is 44 pt and both target frameworks give the same result
+(container `(0,0 343×44)` on the XS, `(0,0 358×44)` on the simulator), which is consistent with the cause described below: the container follows the bar height, which only differs from the title area on iOS 26+ (not tested on iOS 26.0 to 26.4 and 27.1).
 
 | | .NET 9 | .NET 10 |
 |---|---|---|
