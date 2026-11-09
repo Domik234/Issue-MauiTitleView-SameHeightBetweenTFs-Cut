@@ -2,26 +2,38 @@
 
 ### Description
 
-On iOS 27 a custom `NavigationPage.TitleView` is positioned 5 pt too high in the navigation bar. If the native
+On iOS 26.5 and iOS 27 a custom `NavigationPage.TitleView` is positioned 5 pt too high in the navigation bar. If the native
 `UINavigationBar` has `clipsToBounds = true`, the top of the title view is cut off. Diacritics above capital letters
 disappear (`PŘÍLIŠ ŽLUŤOUČKÝ KŮŇ` renders as `PRILIS ZLUTOUCKY KUN`).
 
 The same code and the same `NavigationPage` setup on .NET 9 / MAUI 9.0.x renders correctly on the same iOS version.
 
+iPhone 14 simulator, iOS 26.5:
+
 | net9.0-ios (MAUI 9.0.120) | net10.0-ios (MAUI 10.0.120) |
 |---|---|
-| ![net9](results/net9-bar.png) | ![net10](results/net10-bar.png) |
+| ![net9 iOS 26.5](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS26.5/net9-bar.png) | ![net10 iOS 26.5](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS26.5/net10-bar.png) |
+
+iPhone 14 simulator, iOS 27.0:
+
+| net9.0-ios (MAUI 9.0.120) | net10.0-ios (MAUI 10.0.120) |
+|---|---|
+| ![net9](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS27.0/net9-bar.png) | ![net10](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS27.0/net10-bar.png) |
 
 Same result on a physical iPhone 16e running iOS 27.2 (debug build from the attached project):
 
 | net9.0-ios (MAUI 9.0.120) | net10.0-ios (MAUI 10.0.120) |
 |---|---|
-| ![net9 device](results/net9-device-bar.png) | ![net10 device](results/net10-device-bar.png) |
+| ![net9 device](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhone16e/net9-bar.png) | ![net10 device](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhone16e/net10-bar.png) |
+
+Control: a physical iPhone XS running iOS 18.7.10 is **not** affected (the navigation bar is 44 pt there, both target frameworks give the
+same layout, container `(0,0 343×44)`, no offset): [net9](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhoneXS/net9-bar.png), [net10](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhoneXS/net10-bar.png).
 
 ### Steps to Reproduce
 
 1. Open the attached project (`example/TitleViewRepro.csproj`, targets `net9.0-ios` and `net10.0-ios`, same code for both).
-2. Run it on an iOS 27 simulator with `net9.0-ios`, then with `net10.0-ios` (`cd example; ./run.sh net9`, `./run.sh net10`, or from the IDE).
+2. Run it on an iOS 26.5 or iOS 27 simulator with `net9.0-ios`, then with `net10.0-ios` (`cd example; ./run.sh net9`, `./run.sh net10`, or from the IDE;
+   `SIM_RUNTIME=iOS-26-5 ./run.sh net10` selects the iOS 26.5 simulator).
    Each target framework needs the matching Xcode (26.5 for net9, 27.1 for net10), `run.sh` selects it through `DEVELOPER_DIR`.
 3. Look at the title in the navigation bar.
 
@@ -38,11 +50,12 @@ navBar.ClipsToBounds = true;
 
 Without `ClipsToBounds = true` the title is only shifted up and nothing is cut off, so the layout is wrong in both cases.
 
-### Native layout (dump from the attached project, iOS 27.0 simulator iPhone 14 and iPhone 16e with iOS 27.2)
+### Native layout (dump from the attached project, iPhone 14 simulator with iOS 26.5 and 27.0, iPhone 16e with iOS 27.2)
 
-The navigation bar is 54 pt high in all runs (`UINavigationBar.sizeThatFits` returns 54). The frames below are identical
-on the iOS 27.0 simulator (`results/net9-dump.txt`, `results/net10-dump.txt`) and on the physical iPhone 16e with iOS 27.2
-(`results/net9-device-dump.txt`, `results/net10-device-dump.txt`).
+The navigation bar is 54 pt high in all these runs (`UINavigationBar.sizeThatFits` returns 54). The frames below are identical
+on the iOS 26.5 simulator (`results/simulator-iPhone14-iOS26.5/`), on the iOS 27.0 simulator (`results/simulator-iPhone14-iOS27.0/`)
+and on the physical iPhone 16e with iOS 27.2 (`results/iPhone16e/`); each folder has `net9-dump.txt` and `net10-dump.txt`.
+On the iPhone XS with iOS 18.7.10 (`results/iPhoneXS/`) the bar is 44 pt and the container is `(0,0 343×44)` on both target frameworks.
 
 | | .NET 9 (MAUI 9.0.120) | .NET 10 (MAUI 10.0.120) |
 |---|---|---|
@@ -50,7 +63,7 @@ on the iOS 27.0 simulator (`results/net9-dump.txt`, `results/net10-dump.txt`) an
 | system title wrapper `UIView` frame | `(16,0 358×44)` | `(16,-5 358×54)` |
 | `MauiControlsNavigationBar` | `(0,47 390×54)`, clips True | `(0,47 390×54)`, clips True |
 
-Ancestors of the title label on .NET 10 (from `results/net10-dump.txt`):
+Ancestors of the title label on .NET 10 (from `results/simulator-iPhone14-iOS27.0/net10-dump.txt`, the same on iOS 26.5):
 
 ```
 Container                  (0,0   358×54)  clips True   autoresizing FlexibleDimensions
@@ -72,8 +85,9 @@ In `NavigationRenderer.cs`, class `Container`:
   UIKit gives to the title wrapper.
 * **MAUI 10.0.110 and 10.0.120:** on iOS 26+ `CreateTitleViewContainer` creates the container with `navigationBar.Frame`
   (`new Container(titleView, navigationBar, navigationBarFrame)`), the height is cached in `_navigationBarHeight`, and `ToolbarHeight`
-  returns it before `Superview.Bounds.Height`. The `Frame` setter and `SizeThatFits` then force this height. On iOS 27 the navigation bar
-  (54 pt) is taller than the area UIKit reserves for the title, so the wrapper overflows by 5 pt on both sides.
+  returns it before `Superview.Bounds.Height`. The `Frame` setter and `SizeThatFits` then force this height. On iOS 26.5 and 27 the navigation bar
+  (54 pt) is taller than the area UIKit reserves for the title, so the wrapper overflows by 5 pt on both sides. On iOS 18 (iPhone XS) the bar
+  is 44 pt, the heights agree and nothing is shifted.
 
 According to the description of #39285 the explicit-frame sizing was introduced in #32798.
 
@@ -81,7 +95,7 @@ This is related to #39155 (zero-height container when the bar has not been laid 
 does not change this behaviour: the dump above is from 10.0.120.
 
 It is not specific to the simulator: the attached project gives the same container size and `-5` offset on a physical iPhone 16e with iOS 27.2,
-and so does a production app on iOS 27.2.
+and so does a production app on iOS 27.2. It is not specific to iOS 27 either: it reproduces on the iOS 26.5 simulator.
 
 ### Possible direction (not verified)
 
@@ -103,18 +117,21 @@ Yes. Last version that worked well: MAUI 9.0.120 / .NET 9 (also 9.0.90 by the so
 
 ### Affected platforms / versions
 
-iOS 27.0 simulator (iPhone 14) and physical iPhone 16e with iOS 27.2 (both with the attached project), iOS 27.2 (production app). Not tested on iOS 26.
+iOS 26.5 simulator (iPhone 14), iOS 27.0 simulator (iPhone 14) and physical iPhone 16e with iOS 27.2 (all with the attached project), iOS 27.2 (production app).
+Not affected: physical iPhone XS with iOS 18.7.10 (navigation bar 44 pt). Not tested on iOS 26.0 to 26.4 and 27.1.
 
 ### Environment
 
 * .NET SDK 10.0.403, runtime 10.0.14 / 9.0.22
 * iOS workload 27.1.10018 (net10.0-ios), net9.0-ios built against the iOS 26.5 SDK (Xcode 26.5), net10.0-ios against 27.1 (Xcode 27.1)
 * Microsoft.Maui.Controls 9.0.120 and 10.0.110 / 10.0.120
+* Xcode 26.5 / 27.1; devices: iPhone 14 simulators (iOS 26.5, 27.0), iPhone 16e (iOS 27.2), iPhone XS (iOS 18.7.10)
 
 ### Notes about the comparison
 
 * `net9.0-ios` is built against the iOS 26.5 SDK and `net10.0-ios` against 27.1, so the linked SDK differs between the two runs.
-  A `net10.0-ios` build against the 26.x SDK was not possible with the installed workloads.
+  A `net10.0-ios` build against the 26.x SDK was not possible with the installed workloads. The `net10.0-ios` binary (linked against 27.1)
+  also reproduces the problem when run on the iOS 26.5 simulator runtime.
 * MAUI 9 packages cannot be used with the `net10.0-ios` target framework: the app crashes at startup
   (`MauiCALayerAutosizeToSuperLayerBehavior` native class not loaded).
 
