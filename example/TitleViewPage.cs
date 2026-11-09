@@ -1,15 +1,16 @@
 namespace TitleViewRepro;
 
 /// <summary>
-/// Stránka s CustomTitleView v navigační liště a stejným komponentem v obsahu pro srovnání.
-/// Tlačítka mění text, SecondaryText a HeightRequest a vypisují nativní layout.
-/// <para>Automatický režim pro spuštění bez dotyku (proměnné prostředí předané přes simctl):
-/// TITLEVIEW_AUTODUMP=1 vypíše layout do konzole po 1,5 s a znovu po 3 s,
-/// TITLEVIEW_AUTOPUSH=1 pak otevře další stránku a vypíše i její layout.</para>
+/// Page with a CustomTitleView in the navigation bar and the same component in the content for comparison.
+/// The buttons change the text, SecondaryText and HeightRequest and print the native layout.
+/// <para>Automatic mode for running without touch (environment variables passed through simctl or devicectl):
+/// TITLEVIEW_AUTODUMP=1 prints the layout to the console after 1.5 s and again after 3 s,
+/// TITLEVIEW_AUTOPUSH=1 then pushes another page and prints its layout too.</para>
 /// </summary>
 public class TitleViewPage : ContentPage
 {
-	// První text je velkými písmeny: původní aplikace titulek převádí na velká písmena, háčky nad Ř Š Ž Ť jsou pak nejvyšší.
+	// The sample texts are intentionally Czech: the diacritics are what gets clipped. The first text is in capitals because the original
+	// app uppercases the title, so the carons above Ř Š Ž Ť are the highest part.
 	static readonly string[] Texts = ["PŘÍLIŠ ŽLUŤOUČKÝ KŮŇ", "Příliš žluťoučký kůň", "Test", "Velmi dlouhý nadpis stránky, který se nevejde na jeden řádek"];
 	static readonly string[] SecondaryTexts = ["Úpěl ďábelské ódy", null, "Podtitul"];
 
@@ -29,7 +30,7 @@ public class TitleViewPage : ContentPage
 		_navTitleView = CreateTitleView();
 		NavigationPage.SetTitleView(this, _navTitleView);
 
-		// Systémové tlačítko zpět se schová, vrací levá ikona titulku (jako v původní aplikaci).
+		// The system back button is hidden, the left icon of the title navigates back (as in the original app).
 		NavigationPage.SetHasBackButton(this, false);
 
 		_contentTitleView = CreateTitleView();
@@ -39,7 +40,7 @@ public class TitleViewPage : ContentPage
 			FontFamily = "Menlo",
 			FontSize = 9,
 			TextColor = Colors.Black,
-			Text = "(tlačítko Dump native layout)"
+			Text = "(use the Dump native layout button)"
 		};
 
 		Content = new ScrollView
@@ -63,7 +64,7 @@ public class TitleViewPage : ContentPage
 						}
 					},
 					new Label { Text = NativeLayoutDump.Header(), FontSize = 11, TextColor = Colors.Gray },
-					new Label { Text = "Stejný komponent v obsahu stránky (pro srovnání):", FontSize = 11, TextColor = Colors.Gray },
+					new Label { Text = "The same component in the page content (for comparison):", FontSize = 11, TextColor = Colors.Gray },
 					_contentTitleView,
 					_dumpLabel
 				}
@@ -139,7 +140,7 @@ public class TitleViewPage : ContentPage
 
 			if (Environment.GetEnvironmentVariable("TITLEVIEW_AUTOPUSH") == "1")
 			{
-				// Prodleva, aby se stihl pořídit screenshot této stránky před animací pushe
+				// Delay, so that a screenshot of this page can be taken before the push animation
 				await Task.Delay(3000);
 				Push();
 			}

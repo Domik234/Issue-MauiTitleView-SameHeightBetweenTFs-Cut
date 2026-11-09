@@ -3,16 +3,16 @@ using Microsoft.Maui.Controls.Shapes;
 namespace TitleViewRepro;
 
 /// <summary>
-/// Titulek stránky v navigační liště: levá ikona, vycentrovaný Text s volitelným SecondaryText a pravá ikona.
-/// Rozložení odpovídá původnímu komponentu z verze, kde .NET 9 fungoval:
-/// kořenový Grid s jednou Auto řádkou (HeightRequest 56), uprostřed StackLayout s VerticalOptions=Center.
+/// Page title in the navigation bar: left icon, centered Text with an optional SecondaryText and right icon.
+/// The layout matches the original component from the version where .NET 9 worked:
+/// a root Grid with a single Auto row (HeightRequest 56) and a StackLayout with VerticalOptions=Center in the middle.
 /// </summary>
 public class CustomTitleView : Grid
 {
-	/// <summary>Klik na levou ikonu.</summary>
+	/// <summary>Tap on the left icon.</summary>
 	public event EventHandler LeftClicked;
 
-	// Veřejné prvky pro měření ve stránce
+	// Public elements, measured by the page
 	public Label PrimaryLabel { get; }
 	public Label SecondaryLabel { get; }
 	public StackLayout TextStack { get; }
@@ -84,7 +84,7 @@ public class CustomTitleView : Grid
 		this.Add(CreateIconContainer(rightIcon, LayoutOptions.End), 2, 0);
 	}
 
-	/// <summary>Ikona 24 × 24 s odsazením 8 a kruhovým ořezem 40 × 40 (iOS varianta původního komponentu).</summary>
+	/// <summary>24 × 24 icon with padding 8 and a 40 × 40 circular clip (iOS variant of the original component).</summary>
 	static ContentView CreateIconContainer(string source, LayoutOptions horizontal) => new()
 	{
 		Content = new Image

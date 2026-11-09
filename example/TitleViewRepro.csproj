@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<!-- Dvě cílové platformy v jednom projektu: stejný kód, jiná verze .NET a MAUI.
-		     net9.0-ios    .NET 9, iOS SDK 26.5  (vyžaduje Xcode 26.5)
-		     net10.0-ios   .NET 10, iOS SDK 27.1 (vyžaduje Xcode 27.1)
-		     Každý TF musí mít při sestavení správný Xcode, viz README (MD_APPLE_SDK_ROOT). -->
+		<!-- Two target frameworks in one project: the same code, a different version of .NET and MAUI.
+		     net9.0-ios    .NET 9, iOS SDK 26.5  (requires Xcode 26.5)
+		     net10.0-ios   .NET 10, iOS SDK 27.1 (requires Xcode 27.1)
+		     Each TF must be built with the matching Xcode, see the README (run.sh selects it through DEVELOPER_DIR). -->
 		<TargetFrameworks>net9.0-ios;net10.0-ios</TargetFrameworks>
 
 		<OutputType>Exe</OutputType>
@@ -21,7 +21,7 @@
 
 		<SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
 
-		<!-- Verze MAUI podle TF. Přepsat jde z příkazové řádky: -p:MauiVersionNet10=10.0.110 -->
+		<!-- MAUI version per TF. Can be overridden from the command line: -p:MauiVersionNet10=10.0.110 -->
 		<MauiVersionNet9 Condition="'$(MauiVersionNet9)' == ''">9.0.120</MauiVersionNet9>
 		<MauiVersionNet10 Condition="'$(MauiVersionNet10)' == ''">10.0.120</MauiVersionNet10>
 		<MauiVersion Condition="$(TargetFramework.StartsWith('net9.0'))">$(MauiVersionNet9)</MauiVersion>

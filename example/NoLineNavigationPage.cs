@@ -7,9 +7,9 @@ using Page = Microsoft.Maui.Controls.Page;
 namespace TitleViewRepro;
 
 /// <summary>
-/// NavigationPage bez čáry pod lištou, stejně nastavená jako ve výchozí aplikaci:
-/// bez stínu a separátoru, neprůhledná lišta a nativní UINavigationBar s ClipsToBounds = true.
-/// Právě ClipsToBounds ořízne část TitleView, která při posunu kontejneru přesáhne okraj lišty.
+/// NavigationPage without the line under the bar, configured the same way as in the original app:
+/// no shadow and no separator, opaque bar and a native UINavigationBar with ClipsToBounds = true.
+/// It is ClipsToBounds that cuts off the part of the TitleView that overflows the bar when the container is shifted.
 /// </summary>
 public class NoLineNavigationPage : NavigationPage
 {
@@ -19,7 +19,7 @@ public class NoLineNavigationPage : NavigationPage
 		BarTextColor = Colors.Black;
 
 		this.On<iOS>().SetIsShadowEnabled(false);
-#pragma warning disable CS0618 // Zastaralé, ale výchozí aplikace ho používá
+#pragma warning disable CS0618 // Obsolete, but the original app uses it
 		this.On<iOS>().DisableTranslucentNavigationBar();
 #pragma warning restore CS0618
 		this.On<iOS>().SetHideNavigationBarSeparator(true);

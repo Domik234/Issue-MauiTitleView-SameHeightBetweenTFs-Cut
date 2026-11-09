@@ -4,7 +4,7 @@ public class App : Application
 {
 	public App()
 	{
-		// Bez témat: světlé barvy stačí a výsledek je tak srovnatelný mezi TF.
+		// No theming: light colors are enough and keep the result comparable between target frameworks.
 		UserAppTheme = AppTheme.Light;
 	}
 

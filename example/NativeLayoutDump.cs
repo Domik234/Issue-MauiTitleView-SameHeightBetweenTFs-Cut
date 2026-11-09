@@ -8,8 +8,8 @@ using UIKit;
 namespace TitleViewRepro;
 
 /// <summary>
-/// Výpis nativního layoutu TitleView: frame, bounds, clipsToBounds a metriky fontu labelů a řetěz nativních předků až po UINavigationBar.
-/// Slouží k určení, kdo ořezává horní část TitleView (diakritika nad velkými písmeny).
+/// Dump of the native TitleView layout: frame, bounds, clipsToBounds, label font metrics and the chain of native ancestors up to the UINavigationBar.
+/// Used to find out what clips the top of the TitleView (diacritics above capital letters).
 /// </summary>
 static class NativeLayoutDump
 {
@@ -71,7 +71,7 @@ static class NativeLayoutDump
 
 			if (parent.GetType().Name == "Container")
 			{
-				// Kontejner TitleView, který vytváří MAUI (NavigationRenderer.Container)
+				// TitleView container created by MAUI (NavigationRenderer.Container)
 				sb.AppendLine($"       container: intrinsic {N(parent.IntrinsicContentSize.Width)}×{N(parent.IntrinsicContentSize.Height)}; " +
 					$"sizeThatFits(bounds) {N(parent.SizeThatFits(parent.Bounds.Size).Width)}×{N(parent.SizeThatFits(parent.Bounds.Size).Height)}; alignmentRectInsets {E(parent.AlignmentRectInsets)}");
 			}
