@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<!-- Dvě cílové platformy v jednom projektu: stejný kód, jiná verze .NET a MAUI.
+		     net9.0-ios    .NET 9, iOS SDK 26.5  (vyžaduje Xcode 26.5)
+		     net10.0-ios   .NET 10, iOS SDK 27.1 (vyžaduje Xcode 27.1)
+		     Každý TF musí mít při sestavení správný Xcode, viz README (MD_APPLE_SDK_ROOT). -->
+		<TargetFrameworks>net9.0-ios;net10.0-ios</TargetFrameworks>
+
+		<OutputType>Exe</OutputType>
+		<RootNamespace>TitleViewRepro</RootNamespace>
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+
+		<ApplicationTitle>TitleViewRepro</ApplicationTitle>
+		<ApplicationId>com.example.titleviewrepro</ApplicationId>
+		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
+
+		<SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
+
+		<!-- Verze MAUI podle TF. Přepsat jde z příkazové řádky: -p:MauiVersionNet10=10.0.110 -->
+		<MauiVersionNet9 Condition="'$(MauiVersionNet9)' == ''">9.0.120</MauiVersionNet9>
+		<MauiVersionNet10 Condition="'$(MauiVersionNet10)' == ''">10.0.120</MauiVersionNet10>
+		<MauiVersion Condition="$(TargetFramework.StartsWith('net9.0'))">$(MauiVersionNet9)</MauiVersion>
+		<MauiVersion Condition="$(TargetFramework.StartsWith('net10.0'))">$(MauiVersionNet10)</MauiVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+		<MauiImage Include="Resources\Images\*" />
+		<MauiFont Include="Resources\Fonts\*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+	</ItemGroup>
+
+</Project>
