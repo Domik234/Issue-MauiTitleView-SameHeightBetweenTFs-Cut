@@ -8,26 +8,17 @@ disappear (`PŘÍLIŠ ŽLUŤOUČKÝ KŮŇ` renders as `PRILIS ZLUTOUCKY KUN`).
 
 The same code and the same `NavigationPage` setup on .NET 9 / MAUI 9.0.x renders correctly on the same iOS version.
 
-iPhone 14 simulator, iOS 26.5:
+Crop of the status bar and navigation bar, the same app and the same code for both target frameworks (debug builds from the attached project):
 
-| net9.0-ios (MAUI 9.0.120) | net10.0-ios (MAUI 10.0.120) |
-|---|---|
-| ![net9 iOS 26.5](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS26.5/net9-bar.png) | ![net10 iOS 26.5](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS26.5/net10-bar.png) |
+| Device, OS | net9.0-ios (MAUI 9.0.120) | net10.0-ios (MAUI 10.0.120) |
+|---|---|---|
+| iPhone 14 simulator, iOS 26.5<br>**affected** | ![net9 simulator-iPhone14-iOS26.5](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS26.5/net9-bar.png) | ![net10 simulator-iPhone14-iOS26.5](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS26.5/net10-bar.png) |
+| iPhone 14 simulator, iOS 27.0<br>**affected** | ![net9 simulator-iPhone14-iOS27.0](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS27.0/net9-bar.png) | ![net10 simulator-iPhone14-iOS27.0](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS27.0/net10-bar.png) |
+| iPhone 16e (device), iOS 27.2<br>**affected** | ![net9 iPhone16e](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhone16e/net9-bar.png) | ![net10 iPhone16e](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhone16e/net10-bar.png) |
+| iPhone 14 simulator, iOS 18.6<br>works (not affected) | ![net9 simulator-iPhone14-iOS18.6](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS18.6/net9-bar.png) | ![net10 simulator-iPhone14-iOS18.6](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS18.6/net10-bar.png) |
+| iPhone XS (device), iOS 18.7.10<br>works (not affected) | ![net9 iPhoneXS](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhoneXS/net9-bar.png) | ![net10 iPhoneXS](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhoneXS/net10-bar.png) |
 
-iPhone 14 simulator, iOS 27.0:
-
-| net9.0-ios (MAUI 9.0.120) | net10.0-ios (MAUI 10.0.120) |
-|---|---|
-| ![net9](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS27.0/net9-bar.png) | ![net10](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS27.0/net10-bar.png) |
-
-Same result on a physical iPhone 16e running iOS 27.2 (debug build from the attached project):
-
-| net9.0-ios (MAUI 9.0.120) | net10.0-ios (MAUI 10.0.120) |
-|---|---|
-| ![net9 device](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhone16e/net9-bar.png) | ![net10 device](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhone16e/net10-bar.png) |
-
-Control: iOS 18 is **not** affected, on a physical iPhone XS running iOS 18.7.10 and on the iPhone 14 simulator with iOS 18.6 (the navigation bar is
-44 pt there, both target frameworks give the same layout, container as high as the bar, no offset). Screenshots: iPhone XS [net9](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhoneXS/net9-bar.png), [net10](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/iPhoneXS/net10-bar.png), iOS 18.6 simulator [net9](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS18.6/net9-bar.png), [net10](https://raw.githubusercontent.com/Domik234/Issue-MauiTitleView-SameHeightBetweenTFs-Cut/main/results/simulator-iPhone14-iOS18.6/net10-bar.png).
+On iOS 18 (navigation bar 44 pt) both target frameworks render the same, the title is complete. On iOS 26.5 and 27 (navigation bar 54 pt) only .NET 10 loses the top of the title.
 
 ### Steps to Reproduce
 
